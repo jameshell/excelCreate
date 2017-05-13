@@ -5,10 +5,13 @@
  */
 package com.crunchify.jsp.servlet;
 
+import edu.co.sergio.mundo.dao.DepartamentoDAO;
+import edu.co.sergio.mundo.vo.Departamento;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -44,15 +47,32 @@ public class ChartServlet extends HttpServlet {
 	}
 
 	public JFreeChart getChart() {
+            
+            
 		
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        dataset.addValue(25.0, "Rojo", "Category 1");   
-        dataset.addValue(34.0, "Rojo", "Category 2");   
-        dataset.addValue(19.0, "Azul", "Category 1");   
-        dataset.addValue(29.0, "Azul", "Category 2");   
-        dataset.addValue(41.0, "Verde", "Category 1");   
-        dataset.addValue(33.0, "Verde", "Category 2");   
-
+        
+        DepartamentoDAO dao= new DepartamentoDAO();
+        ArrayList<Departamento> arraylist= (ArrayList<Departamento>)dao.findAll();
+        double sum=0;
+        
+         for (int i = 0; i < arraylist.size(); i++) {
+                sum=arraylist.get(i).getId_departamento()+sum;
+            }
+        for (int i = 0; i < arraylist.size(); i++) {
+                    if (arraylist.get(i).getId_departamento()!=0) {
+                            double porcentaje=(arraylist.get(i).getId_departamento()/sum) *100;
+                dataset.setValue(porcentaje,arraylist.get(i).getNom_departamento(),"Categoria 1");
+                        }else{
+                    double porcentaje=0;
+                dataset.setValue(porcentaje,arraylist.get(i).getNom_departamento(),"Categoria 1");
+                    }
+            }
+        
+        
+        
+        
+       
 		
         JFreeChart chart = ChartFactory.createBarChart3D(
             "3D Bar Chart Demo",      // chart title
